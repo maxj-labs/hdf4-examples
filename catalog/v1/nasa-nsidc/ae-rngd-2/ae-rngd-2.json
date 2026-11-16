@@ -3,7 +3,8 @@
  "stac_version": "1.1.0",
  "stac_extensions": [
   "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-  "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json"
+  "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json",
+  "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
  ],
  "id": "ae-rngd-2",
  "collection": "nasa-nsidc",
@@ -58,7 +59,18 @@
   ],
   "hdf4:sds_count": 2,
   "hdf4:vdata_count": 0,
-  "hdf4:range_count": 2
+  "hdf4:range_count": 2,
+  "sci:doi": "10.5067/AMSR-E/AE_RNGD.002",
+  "cmr:terms": {
+   "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+   "license_url": null,
+   "license_name": null,
+   "license_text": "These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/use_copyright.html. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+   "use_description": null,
+   "access_description": "These data are freely, openly, and fully accessible, provided that you are logged into your NASA Earthdata profile (https://urs.earthdata.nasa.gov/)."
+  },
+  "cmr:collection_concept_id": "C3228763816-NSIDC_CPRD",
+  "cmr:granule_concept_id": "G3228771754-NSIDC_CPRD"
  },
  "links": [
   {

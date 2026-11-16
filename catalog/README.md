@@ -13,17 +13,18 @@ The tools that build this catalogue, the schemas and the issue tracker are at
 
 | Collection | Files | Size | Contents | Licence |
 | --- | --- | --- | --- | --- |
-| `gdal` | 27 | 14.9 MB | HDF4 files from GDAL's test suite and sample-data server | other |
-| `nasa-ghrc` | 1 | 0.4 MB | NASA HDF4 granules from GHRC DAAC | other |
-| `nasa-larc` | 5 | 14.1 MB | NASA HDF4 granules from ASDC | other |
-| `nasa-lpcloud` | 14 | 21.3 MB | NASA HDF4 granules from LP DAAC | other |
-| `nasa-nsidc` | 4 | 12.7 MB | NASA HDF4 granules from NSIDC DAAC | other |
-| `opendap` | 13 | 0.1 MB | HDF4 files from OPeNDAP's DMR++ tests | LGPL-3.0-only |
-| `synthetic` | 22 | 0.2 MB | Synthetic HDF4 files, one storage feature each | CC0-1.0 |
+| `gdal` | 27 | 14.9 MB | HDF4 files from GDAL's test suite and sample-data server | GDAL states its sample and test data are public and freely redistributable |
+| `nasa-ghrc` | 1 | 0.4 MB | NASA HDF4 granules from GHRC DAAC | Each granule carries its collection's terms as recorded in NASA CMR; see the item's cmr:terms |
+| `nasa-larc` | 5 | 14.1 MB | NASA HDF4 granules from ASDC | Each granule carries its collection's terms as recorded in NASA CMR; see the item's cmr:terms |
+| `nasa-lpcloud` | 14 | 21.3 MB | NASA HDF4 granules from LP DAAC | Each granule carries its collection's terms as recorded in NASA CMR; see the item's cmr:terms |
+| `nasa-nsidc` | 4 | 12.7 MB | NASA HDF4 granules from NSIDC DAAC | Each granule carries its collection's terms as recorded in NASA CMR; see the item's cmr:terms |
+| `opendap` | 13 | 0.1 MB | HDF4 files from OPeNDAP's DMR++ tests | From the OPeNDAP BES repository, whose COPYING file is the GNU LGPL version 3 |
+| `synthetic` | 22 | 0.2 MB | Synthetic HDF4 files, one storage feature each | CC0-1.0 (proposed; not yet confirmed by the repository owner) |
 
-Licence `other` means each item carries its source's own terms; see the collection's
-`license` link and each item's `via` links. NASA granules link to their record in NASA's
-Common Metadata Repository, which holds the dataset's citation and use constraints.
+Each collection's `license` links point at the terms quoted here. NASA items carry their
+collection's terms exactly as NASA records them, in the `cmr:terms` property, together
+with the dataset DOI and the CMR record ids. A few NASA collections record no terms in
+CMR; for those `cmr:terms` is empty and only NASA's general data-use guidance applies.
 
 ## Layout
 

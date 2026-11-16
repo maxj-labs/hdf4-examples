@@ -105,6 +105,30 @@ def pick_granule(concept_id: str) -> dict | None:
     }
 
 
+def terms_of_use(umm: dict) -> dict:
+    """The collection's terms exactly as NASA records them in CMR, with nothing inferred.
+
+    ``UseConstraints`` holds a licence URL or a licence text; ``AccessConstraints``
+    sometimes adds conditions in prose. A collection may record neither.
+    """
+    use = umm.get("UseConstraints") or {}
+    access = umm.get("AccessConstraints") or {}
+    url = use.get("LicenseURL") or {}
+
+    def clean(text: str | None) -> str | None:
+        text = " ".join((text or "").split())
+        return text if text and text.lower() != "none" else None
+
+    return {
+        "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+        "license_url": url.get("Linkage"),
+        "license_name": url.get("Name"),
+        "license_text": clean(use.get("LicenseText")),
+        "use_description": clean(use.get("Description") if isinstance(use.get("Description"), str) else url.get("Description")),
+        "access_description": clean(access.get("Description")),
+    }
+
+
 def bbox_polygon(bbox: list[float]) -> dict:
     w, s, e, n = bbox
     return {"type": "Polygon", "coordinates": [[[w, s], [e, s], [e, n], [w, n], [w, s]]]}
@@ -132,8 +156,7 @@ def main() -> int:
             continue
         filename = granule["url"].rsplit("/", 1)[1]
         doi = umm.get("DOI", {}).get("DOI")
-        constraints = umm.get("UseConstraints", {})
-        licence = constraints.get("LicenseURL", {}).get("Linkage") or constraints.get("LicenseText") or constraints.get("Description")
+        terms = terms_of_use(umm)
         entry = {
             "id": slug(f"{short_name}-{version}"),
             "filename": filename,
@@ -147,8 +170,10 @@ def main() -> int:
             ],
             "cmr": {"collection_concept_id": concept_id, "granule_concept_id": granule["granule_concept_id"], "short_name": short_name, "version": version},
             "doi": doi,
-            "use_constraints": licence,
+            "terms": terms,
         }
+        if terms["license_url"]:
+            entry["via"].append({"rel": "license", "href": terms["license_url"], "title": terms["license_name"] or "Terms of use recorded in NASA CMR"})
         if doi:
             entry["via"].append({"href": f"https://doi.org/{doi}", "title": "Dataset DOI"})
         if granule["bbox"]:
@@ -171,9 +196,10 @@ def main() -> int:
             "title": f"NASA HDF4 granules from {PROVIDER_TITLES.get(provider, provider)}",
             "description": f"One small granule per selected collection from NASA's {PROVIDER_TITLES.get(provider, provider)} cloud archive ({provider} in CMR), chosen to cover distinct products. Each item links to its CMR granule and collection records.",
             "license": "other",
+            "license_note": "Each granule carries its collection's terms as recorded in NASA CMR; see the item's cmr:terms",
             "datetime": "2026-11-16T00:00:00Z",
             "providers": [{"name": PROVIDER_TITLES.get(provider, provider), "roles": ["producer", "licensor"]}],
-            "links": [{"rel": "license", "href": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance", "title": "NASA Earth science data use guidance"}],
+            "links": [{"rel": "license", "href": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance", "title": "NASA Earth science data use guidance (general policy; item terms take precedence)"}],
             "items": items,
         }
         path.write_text(json.dumps(source, indent=1) + "\n")

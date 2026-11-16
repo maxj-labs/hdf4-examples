@@ -3,6 +3,7 @@
  "title": "NASA HDF4 granules from LP DAAC",
  "description": "One small granule per selected collection from NASA's LP DAAC cloud archive (LPCLOUD in CMR), chosen to cover distinct products. Each item links to its CMR granule and collection records.",
  "license": "other",
+ "license_note": "Each granule carries its collection's terms as recorded in NASA CMR; see the item's cmr:terms",
  "datetime": "2026-11-16T00:00:00Z",
  "providers": [
   {
@@ -17,7 +18,7 @@
   {
    "rel": "license",
    "href": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance",
-   "title": "NASA Earth science data use guidance"
+   "title": "NASA Earth science data use guidance (general policy; item terms take precedence)"
   }
  ],
  "items": [
@@ -38,6 +39,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD14.061",
      "title": "Dataset DOI"
     }
@@ -49,7 +55,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD14.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     -10.3024923862091,
     -21.4211158837425,
@@ -102,6 +115,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD09A1.061",
      "title": "Dataset DOI"
     }
@@ -113,7 +131,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD09A1.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     50.5814335096737,
     -20.0154196332647,
@@ -166,6 +191,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD09GA.061",
      "title": "Dataset DOI"
     }
@@ -177,7 +207,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD09GA.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     50.5814335096737,
     -20.0154196332647,
@@ -230,6 +267,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD11_L2.061",
      "title": "Dataset DOI"
     }
@@ -241,7 +283,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD11_L2.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     -104.25407796975,
     -43.4600897637114,
@@ -294,6 +343,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD11B1.061",
      "title": "Dataset DOI"
     }
@@ -305,7 +359,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD11B1.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     -29.2501999319875,
     -69.9958333333333,
@@ -358,6 +419,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD11C1.061",
      "title": "Dataset DOI"
     }
@@ -369,7 +435,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD11C1.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     -180.0,
     -90.0,
@@ -433,7 +506,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MCD12Q1.061",
-   "use_constraints": null,
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": null,
+    "license_name": null,
+    "license_text": null,
+    "use_description": null,
+    "access_description": null
+   },
    "bbox": [
     138.446219,
     29.806108,
@@ -486,6 +566,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD13A2.061",
      "title": "Dataset DOI"
     }
@@ -497,7 +582,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD13A2.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     -168.462494888187,
     78.5370164031265,
@@ -561,7 +653,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MCD19A2.061",
-   "use_constraints": null,
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": null,
+    "license_name": null,
+    "license_text": null,
+    "use_description": null,
+    "access_description": null
+   },
    "bbox": [
     10.5996129612972,
     19.9159339927733,
@@ -614,6 +713,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MOD21.061",
      "title": "Dataset DOI"
     }
@@ -625,7 +729,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD21.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     -144.194427261075,
     68.8543430043245,
@@ -678,6 +789,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MODIS/MCD43A4.061",
      "title": "Dataset DOI"
     }
@@ -689,7 +805,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MCD43A4.061",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     -0.0159019707138163,
     -60.01014730684,
@@ -753,7 +876,14 @@
     "version": "061"
    },
    "doi": "10.5067/MODIS/MOD28C2.061",
-   "use_constraints": null,
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": null,
+    "license_name": null,
+    "license_text": null,
+    "use_description": null,
+    "access_description": null
+   },
    "bbox": [
     -180.0,
     -90.0,
@@ -806,6 +936,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/ASTER/AST_L1A.004",
      "title": "Dataset DOI"
     }
@@ -817,7 +952,14 @@
     "version": "004"
    },
    "doi": "10.5067/ASTER/AST_L1A.004",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": null
+   },
    "bbox": [
     169.898516,
     -78.014626,
@@ -870,6 +1012,11 @@
      "title": "Collection record in NASA CMR"
     },
     {
+     "rel": "license",
+     "href": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+     "title": "Data Use Policy"
+    },
+    {
      "href": "https://doi.org/10.5067/MEaSUREs/GWELD/GWELDMO.003",
      "title": "Dataset DOI"
     }
@@ -881,7 +1028,14 @@
     "version": "003"
    },
    "doi": "10.5067/MEaSUREs/GWELD/GWELDMO.003",
-   "use_constraints": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": "https://earthdata.nasa.gov/earth-observation-data/data-use-policy",
+    "license_name": "Data Use Policy",
+    "license_text": null,
+    "use_description": "License URL for data use policy",
+    "access_description": "The WELD products are freely available for educational, research, or commercial applications. If you use the WELD products please cite them following the WELD Citation guidelines."
+   },
    "bbox": [
     138.065814702561,
     -8.61889554574343,

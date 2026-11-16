@@ -14,6 +14,7 @@ source = {
         "one storage layout, compression coder, number type or metadata shape."
     ),
     "license": "CC0-1.0",
+    "license_note": "CC0-1.0 (proposed; not yet confirmed by the repository owner)",
     "datetime": "2026-11-16T00:00:00Z",
     "providers": [
         {"name": "maxj-labs/hdf4-examples", "roles": ["producer"], "url": "https://github.com/maxj-labs/hdf4-examples"}

@@ -3,6 +3,7 @@
  "title": "NASA HDF4 granules from NSIDC DAAC",
  "description": "One small granule per selected collection from NASA's NSIDC DAAC cloud archive (NSIDC_CPRD in CMR), chosen to cover distinct products. Each item links to its CMR granule and collection records.",
  "license": "other",
+ "license_note": "Each granule carries its collection's terms as recorded in NASA CMR; see the item's cmr:terms",
  "datetime": "2026-11-16T00:00:00Z",
  "providers": [
   {
@@ -17,7 +18,7 @@
   {
    "rel": "license",
    "href": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance",
-   "title": "NASA Earth science data use guidance"
+   "title": "NASA Earth science data use guidance (general policy; item terms take precedence)"
   }
  ],
  "items": [
@@ -49,7 +50,14 @@
     "version": "2"
    },
    "doi": "10.5067/AMSR-E/AE_RNGD.002",
-   "use_constraints": " These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/use_copyright.html. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": null,
+    "license_name": null,
+    "license_text": "These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/use_copyright.html. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+    "use_description": null,
+    "access_description": "These data are freely, openly, and fully accessible, provided that you are logged into your NASA Earthdata profile (https://urs.earthdata.nasa.gov/)."
+   },
    "bbox": [
     -180.0,
     -90.0,
@@ -113,7 +121,14 @@
     "version": "61"
    },
    "doi": "10.5067/MODIS/MOD10A1.061",
-   "use_constraints": " These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/data-use-and-copyright. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": null,
+    "license_name": null,
+    "license_text": "These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/data-use-and-copyright. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+    "use_description": null,
+    "access_description": "These data are freely, openly, and fully accessible, provided that you are logged into your NASA Earthdata profile (https://urs.earthdata.nasa.gov/)."
+   },
    "bbox": [
     121.409671246333,
     -20.0355981480789,
@@ -177,7 +192,14 @@
     "version": "61"
    },
    "doi": "10.5067/MODIS/MOD29.061",
-   "use_constraints": " These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/data-use-and-copyright. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": null,
+    "license_name": null,
+    "license_text": "These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/data-use-and-copyright. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+    "use_description": null,
+    "access_description": "These data are freely, openly, and fully accessible, provided that you are logged into your NASA Earthdata profile (https://urs.earthdata.nasa.gov/)."
+   },
    "bbox": [
     149.95414084646,
     20.0995923744351,
@@ -241,7 +263,14 @@
     "version": "1"
    },
    "doi": "10.5067/ADEOS-II/AMSR/AA_L2A.001",
-   "use_constraints": " These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/use_copyright.html. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+   "terms": {
+    "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+    "license_url": null,
+    "license_name": null,
+    "license_text": "These data are freely, openly, and fully available to use without restrictions, provided that you cite the data according to the recommended citation at https://nsidc.org/about/use_copyright.html. For more information on the NASA EOSDIS Data Use Policy, see https://earthdata.nasa.gov/earth-observation-data/data-use-policy.",
+    "use_description": null,
+    "access_description": "These data are freely, openly, and fully accessible, provided that you are logged into your NASA Earthdata profile (https://urs.earthdata.nasa.gov/)."
+   },
    "sha256": "31aa3329db586ae0f361137ef28c7cd95bdff5223b3d6e4533b2d32d8720953b"
   }
  ]

@@ -3,7 +3,8 @@
  "stac_version": "1.1.0",
  "stac_extensions": [
   "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-  "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json"
+  "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json",
+  "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
  ],
  "id": "mi3daer-002",
  "collection": "nasa-larc",
@@ -63,7 +64,18 @@
   ],
   "hdf4:sds_count": 4,
   "hdf4:vdata_count": 7,
-  "hdf4:range_count": 4
+  "hdf4:range_count": 4,
+  "sci:doi": "10.5067/Terra/MISR/MI3DAER_L3.002",
+  "cmr:terms": {
+   "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+   "license_url": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance",
+   "license_name": "Data Use Guidance",
+   "license_text": null,
+   "use_description": "For more information, see the ESDIS Data Use Guidance: https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance",
+   "access_description": "WORLD"
+  },
+  "cmr:collection_concept_id": "C3422083888-LARC_CLOUD",
+  "cmr:granule_concept_id": "G3565550062-LARC_CLOUD"
  },
  "links": [
   {
@@ -90,6 +102,11 @@
    "rel": "via",
    "href": "https://cmr.earthdata.nasa.gov/search/concepts/C3422083888-LARC_CLOUD",
    "title": "Collection record in NASA CMR"
+  },
+  {
+   "rel": "license",
+   "href": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies/data-use-guidance",
+   "title": "Data Use Guidance"
   },
   {
    "rel": "via",

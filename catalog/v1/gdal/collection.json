@@ -7,8 +7,9 @@
  ],
  "id": "gdal",
  "title": "HDF4 files from GDAL's test suite and sample-data server",
- "description": "Small files written by GDAL and the HDF tools for GDAL's HDF4 driver tests, pinned to one GDAL commit, plus six real NASA granules from download.osgeo.org/gdal/data/hdf4/ that GDAL's tests download at run time.",
+ "description": "Small files written by GDAL and the HDF tools for GDAL's HDF4 driver tests, pinned to one GDAL commit, plus six real NASA granules from download.osgeo.org/gdal/data/hdf4/ that GDAL's tests download at run time. GDAL's statement on this data, in autotest/README.md and in the COPYING file on its download server: \"The GDAL Team makes every effort to assure that all sample data files available from GDAL download server and test data files used in GDAL Autotest package are available as public and freely redistributable geodata.\" The GDAL source tree itself is under an MIT-style licence. The six real granules are NASA products; GDAL records an origin for two of them (PROVENANCE.TXT).",
  "license": "other",
+ "license_note": "GDAL states its sample and test data are public and freely redistributable",
  "providers": [
   {
    "name": "GDAL",
@@ -90,8 +91,23 @@
   },
   {
    "rel": "license",
+   "href": "https://download.osgeo.org/gdal/data/COPYING",
+   "title": "GDAL: notes about availability of sample and test data"
+  },
+  {
+   "rel": "license",
+   "href": "https://github.com/OSGeo/gdal/blob/1fe1fe6b8a48f1213573b7e6c6d954e4b6fb031f/autotest/README.md#notes-about-availability-of-gdal-sample-and-test-data",
+   "title": "The same statement in GDAL's autotest README"
+  },
+  {
+   "rel": "license",
    "href": "https://github.com/OSGeo/gdal/blob/1fe1fe6b8a48f1213573b7e6c6d954e4b6fb031f/LICENSE.TXT",
-   "title": "GDAL licence (repository files)"
+   "title": "GDAL licence (MIT style), covering the source tree"
+  },
+  {
+   "rel": "about",
+   "href": "https://download.osgeo.org/gdal/data/hdf4/PROVENANCE.TXT",
+   "title": "Origin of two of the real granules"
   },
   {
    "rel": "item",

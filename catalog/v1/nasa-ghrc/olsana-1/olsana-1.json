@@ -3,7 +3,8 @@
  "stac_version": "1.1.0",
  "stac_extensions": [
   "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-  "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json"
+  "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json",
+  "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
  ],
  "id": "olsana-1",
  "collection": "nasa-ghrc",
@@ -50,7 +51,18 @@
   "hdf4:features": [],
   "hdf4:sds_count": 0,
   "hdf4:vdata_count": 1,
-  "hdf4:range_count": 0
+  "hdf4:range_count": 0,
+  "sci:doi": "10.5067/LIS/OLS/DATA301",
+  "cmr:terms": {
+   "source": "UseConstraints and AccessConstraints of the collection record in NASA CMR",
+   "license_url": null,
+   "license_name": null,
+   "license_text": null,
+   "use_description": null,
+   "access_description": "This product has full public access."
+  },
+  "cmr:collection_concept_id": "C1976712047-GHRC_DAAC",
+  "cmr:granule_concept_id": "G1976716750-GHRC_DAAC"
  },
  "links": [
   {

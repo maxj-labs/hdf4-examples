@@ -2,7 +2,7 @@
  "id": "opendap",
  "title": "HDF4 files from OPeNDAP's DMR++ tests",
  "description": "Small files from the OPeNDAP BES repository's HDF4 DMR++ test data, pinned to one commit, each with OPeNDAP's own DMR++ description where one exists.",
- "license": "LGPL-3.0-only",
+ "license": "other",
  "datetime": "2026-11-16T00:00:00Z",
  "providers": [
   {
@@ -302,6 +302,19 @@
     }
    ],
    "sha256": "cf536121814f033764ac1afe0e4e9f9e0bf237ed71f24ad352819f173918b64c"
+  }
+ ],
+ "license_note": "From the OPeNDAP BES repository, whose COPYING file is the GNU LGPL version 3",
+ "links": [
+  {
+   "rel": "license",
+   "href": "https://github.com/OPENDAP/bes/blob/30bf584f713306c8ef867368d6840c18bafc35a6/COPYING",
+   "title": "OPeNDAP BES COPYING (GNU Lesser General Public License, version 3)"
+  },
+  {
+   "rel": "license",
+   "href": "https://github.com/OPENDAP/bes/blob/30bf584f713306c8ef867368d6840c18bafc35a6/COPYRIGHT_UCAR",
+   "title": "OPeNDAP BES COPYRIGHT_UCAR"
   }
  ]
 }

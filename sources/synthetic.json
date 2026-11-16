@@ -3,6 +3,7 @@
  "title": "Synthetic HDF4 files, one storage feature each",
  "description": "Files written by the HDF4 C library through tools/gen_synthetic.py. Each isolates one storage layout, compression coder, number type or metadata shape.",
  "license": "CC0-1.0",
+ "license_note": "CC0-1.0 (proposed; not yet confirmed by the repository owner)",
  "datetime": "2026-11-16T00:00:00Z",
  "providers": [
   {

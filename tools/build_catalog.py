@@ -173,6 +173,13 @@ def build_item(collection: dict[str, Any], entry: dict[str, Any]) -> dict[str, A
     ]
     for via in entry.get("via", []):
         links.append({"rel": "via", **via})
+    if entry.get("doi"):
+        properties["sci:doi"] = entry["doi"]
+    if entry.get("terms"):
+        properties["cmr:terms"] = entry["terms"]
+    if entry.get("cmr"):
+        properties["cmr:collection_concept_id"] = entry["cmr"]["collection_concept_id"]
+        properties["cmr:granule_concept_id"] = entry["cmr"]["granule_concept_id"]
     assets: dict[str, Any] = {
         "data": {
             "href": f"./{filename}",
@@ -205,7 +212,7 @@ def build_item(collection: dict[str, Any], entry: dict[str, Any]) -> dict[str, A
     item = {
         "type": "Feature",
         "stac_version": STAC_VERSION,
-        "stac_extensions": [FILE_EXT, HDF4_EXT],
+        "stac_extensions": [FILE_EXT, HDF4_EXT, *([SCI_EXT] if entry.get("doi") else [])],
         "id": item_id,
         "collection": collection["id"],
         "geometry": entry.get("geometry"),
@@ -247,6 +254,7 @@ def build_collection(source: dict[str, Any]) -> tuple[dict[str, Any], list[dict[
         "title": source["title"],
         "description": source["description"],
         "license": source["license"],
+        **({"license_note": source["license_note"]} if source.get("license_note") else {}),
         "providers": source.get("providers", []),
         "keywords": ["HDF4", "test data"],
         "extent": {
@@ -275,7 +283,7 @@ def readme(collections: list[dict[str, Any]], flat: list[dict[str, Any]]) -> str
     for c in collections:
         mine = [r for r in flat if r["collection"] == c["id"]]
         size = sum(r["size"] for r in mine) / 1e6
-        rows.append(f"| `{c['id']}` | {len(mine)} | {size:.1f} MB | {c['title']} | {c['license']} |")
+        rows.append(f"| `{c['id']}` | {len(mine)} | {size:.1f} MB | {c['title']} | {c.get('license_note', c['license'])} |")
     total = sum(r["size"] for r in flat) / 1e6
     layouts = sorted({x for r in flat for x in r["hdf4:layouts"]})
     coders = sorted({x for r in flat for x in r["hdf4:coders"]})
@@ -297,9 +305,10 @@ The tools that build this catalogue, the schemas and the issue tracker are at
 | --- | --- | --- | --- | --- |
 {chr(10).join(rows)}
 
-Licence `other` means each item carries its source's own terms; see the collection's
-`license` link and each item's `via` links. NASA granules link to their record in NASA's
-Common Metadata Repository, which holds the dataset's citation and use constraints.
+Each collection's `license` links point at the terms quoted here. NASA items carry their
+collection's terms exactly as NASA records them, in the `cmr:terms` property, together
+with the dataset DOI and the CMR record ids. A few NASA collections record no terms in
+CMR; for those `cmr:terms` is empty and only NASA's general data-use guidance applies.
 
 ## Layout
 
