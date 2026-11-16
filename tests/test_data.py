@@ -25,6 +25,9 @@ def data_file(row: dict) -> Path:
     path = DATA / row["data"]
     if not path.exists():
         pytest.skip("file not present in data/")
+    if row.get("hdf4:reproducible") is False:
+        if hashlib.sha256(path.read_bytes()).hexdigest() != row["sha256"]:
+            pytest.skip("local copy was regenerated; this file's bytes vary between machines")
     return path
 
 
@@ -57,6 +60,8 @@ def test_tags_are_reproducible(row: dict) -> None:
 )
 def test_synthetic_file_regenerates_byte_for_byte(row: dict, tmp_path) -> None:
     pytest.importorskip("pyhdf")
+    if row.get("hdf4:reproducible") is False:
+        pytest.skip("this file's bytes vary between machines")
     # A fresh process per case, as tools/gen_synthetic.py itself does.
     subprocess.run(
         [sys.executable, str(ROOT / "tools" / "gen_synthetic.py"), row["id"], "--out", str(tmp_path)],

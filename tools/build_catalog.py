@@ -215,6 +215,8 @@ def build_item(collection: dict[str, Any], entry: dict[str, Any]) -> dict[str, A
     }
     if entry.get("bbox"):
         item["bbox"] = entry["bbox"]
+    if entry.get("reproducible") is False:
+        properties["hdf4:reproducible"] = False
     write_json(out_dir / f"{item_id}.json", item)
     return item
 

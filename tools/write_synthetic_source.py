@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from gen_synthetic import CASES
+from gen_synthetic import CASES, NOT_REPRODUCIBLE
 
 ROOT = Path(__file__).resolve().parent.parent
 source = {
@@ -22,6 +22,7 @@ source = {
         {
             "id": name,
             "description": description,
+            **({"reproducible": False} if name in NOT_REPRODUCIBLE else {}),
             "via": [
                 {
                     "href": "https://github.com/maxj-labs/hdf4-examples/blob/main/tools/gen_synthetic.py",

@@ -35,6 +35,12 @@ OUT = ROOT / "data" / "synthetic"
 
 CASES: dict[str, tuple[Callable[[str], None], str]] = {}
 
+# Cases whose bytes differ from one machine to the next. The Skipping-Huffman
+# encoder writes some bytes it never initialises, so the decoded values are
+# always the same but the file is not. For these the published file is the
+# reference, and a regenerated copy is only expected to decode identically.
+NOT_REPRODUCIBLE = frozenset({"skphuff-int16"})
+
 
 def case(name: str, description: str):
     def register(func: Callable[[str], None]) -> Callable[[str], None]:

@@ -67,6 +67,7 @@
   {
    "id": "skphuff-int16",
    "description": "Contiguous Skipping-Huffman-compressed int16",
+   "reproducible": false,
    "via": [
     {
      "href": "https://github.com/maxj-labs/hdf4-examples/blob/main/tools/gen_synthetic.py",

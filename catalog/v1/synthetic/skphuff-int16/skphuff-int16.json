@@ -29,7 +29,8 @@
   "hdf4:features": [],
   "hdf4:sds_count": 1,
   "hdf4:vdata_count": 0,
-  "hdf4:range_count": 1
+  "hdf4:range_count": 1,
+  "hdf4:reproducible": false
  },
  "links": [
   {
