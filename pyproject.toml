@@ -3,6 +3,7 @@ name = "hdf4-examples"
 version = "0.1.0"
 description = "Tools that build and check a catalogue of example HDF4 files"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = [
     "numpy>=2.1",
     "pyhdf>=0.11.6",
