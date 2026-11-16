@@ -1,0 +1,328 @@
+"""Build the STAC catalogue under ``catalog/`` from described files and ``sources/``.
+
+For each collection named in ``sources/<collection>.json`` this reads every
+``data/<collection>/<id>/<id>.expected.json`` (written by ``describe.py``),
+copies it into the catalogue, derives the ``hdf4:*`` tags from it, and writes
+the STAC item, the collection, the root catalogue and a flat ``items.json``.
+
+The HDF4 files themselves stay in ``data/`` and are never copied into git.
+
+    uv run tools/build_catalog.py
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import shutil
+import sys
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parent.parent
+VERSION = "v1"
+CATALOG = ROOT / "catalog" / VERSION
+DATA = ROOT / "data"
+SOURCES = ROOT / "sources"
+
+STAC_VERSION = "1.1.0"
+FILE_EXT = "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+SCI_EXT = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
+HDF4_EXT = (
+    "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/"
+    "schemas/hdf4-stac-extension/v0.1.0/schema.json"
+)
+HDF4_MEDIA_TYPE = "application/x-hdf"
+ODL_PREFIXES = ("CoreMetadata.", "ArchiveMetadata.", "StructMetadata.")
+RASTER_TAGS = {"RIG", "RI", "RI8", "CI", "CI8", "ID", "ID8"}
+ANNOTATION_TAGS = {"DIL", "DIA", "FID", "FD"}
+
+
+def multihash(sha256_hex: str) -> str:
+    """SHA-256 as a multihash, the form the STAC file extension uses."""
+    return "1220" + sha256_hex
+
+
+def file_fields(path: Path) -> dict[str, Any]:
+    raw = path.read_bytes()
+    return {"file:size": len(raw), "file:checksum": multihash(hashlib.sha256(raw).hexdigest())}
+
+
+def tags(expected: dict[str, Any]) -> dict[str, Any]:
+    """Derive the hdf4:* structural tags from an answer key."""
+    sds = expected["sds"]
+    descriptors = expected["descriptors"]
+    present = set(descriptors["tags"])
+    models = set()
+    if sds:
+        models.add("sd")
+    if expected["vdata"]:
+        models.add("vdata")
+    if present & RASTER_TAGS:
+        models.add("raster_image")
+    if present & ANNOTATION_TAGS:
+        models.add("annotation")
+    eos = expected.get("eos") or {}
+    for key, model in (("grids", "eos_grid"), ("swaths", "eos_swath"), ("points", "eos_point")):
+        if eos.get(key):
+            models.add(model)
+
+    layouts, coders, types, features = set(), set(), set(), set()
+    multi_range = 0
+    for var in sds:
+        st = var["storage"]
+        coders.add(st["coder"])
+        suffix = "-le" if var["stored_byte_order"] == "little" else ""
+        types.add(var["number_type"] + suffix)
+        size = 1
+        for n in var["shape"]:
+            size *= n
+        if size == 0:
+            features.add("zero_length")
+        elif not st["ranges"]:
+            layouts.add("unwritten")
+        elif st["layout"] == "chunked":
+            layouts.add("chunked")
+            grid = 1
+            for n in st["chunk_grid"]:
+                grid *= n
+            if len({tuple(r["chunk"]) for r in st["ranges"]}) < grid:
+                features.add("partial_chunks")
+            per_chunk: dict[tuple[int, ...], list[dict[str, int]]] = {}
+            for r in st["ranges"]:
+                per_chunk.setdefault(tuple(r["chunk"]), []).append(r)
+            if any(len(v) > 1 for v in per_chunk.values()):
+                layouts.add("chunk_multi_range")
+        else:
+            if len(st["ranges"]) > 1:
+                multi_range += 1
+                layouts.add("linked_scattered")
+            else:
+                layouts.add("compressed" if st["coder"] != "none" else "contiguous")
+        if any(d["unlimited"] for d in var["dimensions"]):
+            features.add("unlimited_dimension")
+        if var["is_coordinate"]:
+            features.add("dimension_scale")
+        if var["fill_value_attribute"] is not None:
+            features.add("fill_value")
+        if any(a["length"] > 1 and a["type"] not in ("char8", "uchar8") for a in var["attributes"].values()):
+            features.add("array_attribute")
+    linked_sd = descriptors["special_elements"].get("SD", {}).get("linked", 0)
+    if linked_sd > multi_range:
+        layouts.add("linked_single")
+    if "external" in {k for v in descriptors["special_elements"].values() for k in v}:
+        layouts.add("external")
+    names = [v["name"] for v in sds]
+    if len(names) != len(set(names)):
+        features.add("duplicate_names")
+    if any(k.startswith(ODL_PREFIXES) for k in expected["global_attributes"]):
+        features.add("odl_metadata")
+    if any(
+        a["length"] > 1 and a["type"] not in ("char8", "uchar8")
+        for a in expected["global_attributes"].values()
+    ):
+        features.add("array_attribute")
+
+    return {
+        "hdf4:library_version": expected["file"]["written_by"]["version"],
+        "hdf4:data_models": sorted(models),
+        "hdf4:layouts": sorted(layouts),
+        "hdf4:coders": sorted(coders),
+        "hdf4:number_types": sorted(types),
+        "hdf4:max_rank": max((len(v["shape"]) for v in sds), default=0),
+        "hdf4:features": sorted(features),
+        "hdf4:sds_count": len(sds),
+        "hdf4:vdata_count": len(expected["vdata"]),
+        "hdf4:range_count": sum(len(v["storage"]["ranges"]) for v in sds),
+    }
+
+
+def write_json(path: Path, obj: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, indent=1) + "\n")
+
+
+def build_item(collection: dict[str, Any], entry: dict[str, Any]) -> dict[str, Any] | None:
+    item_id = entry["id"]
+    filename = entry.get("filename", f"{item_id}.hdf")
+    data_dir = DATA / collection["id"] / item_id
+    data_file = data_dir / filename
+    expected_src = data_file.with_suffix(".expected.json")
+    out_dir = CATALOG / collection["id"] / item_id
+    expected_dst = out_dir / expected_src.name
+    if expected_src.exists():
+        out_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(expected_src, expected_dst)
+    elif not expected_dst.exists():
+        print(f"skip  {collection['id']}/{item_id}: not described yet", file=sys.stderr)
+        return None
+    expected = json.loads(expected_dst.read_text())
+
+    properties: dict[str, Any] = {
+        "title": entry.get("title", item_id),
+        "description": entry["description"],
+        "datetime": entry.get("datetime", collection["datetime"]),
+        **tags(expected),
+    }
+    if entry.get("expect"):
+        properties["hdf4:expect"] = entry["expect"]
+    links = [
+        {"rel": "root", "href": "../../catalog.json", "type": "application/json"},
+        {"rel": "parent", "href": "../collection.json", "type": "application/json"},
+        {"rel": "collection", "href": "../collection.json", "type": "application/json"},
+    ]
+    for via in entry.get("via", []):
+        links.append({"rel": "via", **via})
+    assets: dict[str, Any] = {
+        "data": {
+            "href": f"./{filename}",
+            "type": HDF4_MEDIA_TYPE,
+            "roles": ["data"],
+            "file:size": expected["file"]["size"],
+            "file:checksum": multihash(expected["file"]["sha256"]),
+        },
+        "expected": {
+            "href": f"./{expected_dst.name}",
+            "type": "application/json",
+            "title": "What the HDF4 C library reports for this file",
+            "roles": ["metadata"],
+            **file_fields(expected_dst),
+        },
+    }
+    for sidecar in entry.get("sidecars", []):
+        path = out_dir / sidecar["filename"]
+        src = data_dir / sidecar["filename"]
+        if src.exists():
+            shutil.copyfile(src, path)
+        if path.exists():
+            assets[sidecar["key"]] = {
+                "href": f"./{sidecar['filename']}",
+                "type": sidecar["type"],
+                "title": sidecar["title"],
+                "roles": ["metadata"],
+                **file_fields(path),
+            }
+    item = {
+        "type": "Feature",
+        "stac_version": STAC_VERSION,
+        "stac_extensions": [FILE_EXT, HDF4_EXT],
+        "id": item_id,
+        "collection": collection["id"],
+        "geometry": entry.get("geometry"),
+        "properties": properties,
+        "links": links,
+        "assets": assets,
+    }
+    if entry.get("bbox"):
+        item["bbox"] = entry["bbox"]
+    write_json(out_dir / f"{item_id}.json", item)
+    return item
+
+
+def summaries(items: list[dict[str, Any]]) -> dict[str, list[Any]]:
+    out: dict[str, set[Any]] = {}
+    for item in items:
+        for key, value in item["properties"].items():
+            if key.startswith("hdf4:") and isinstance(value, list):
+                out.setdefault(key, set()).update(value)
+    return {k: sorted(v) for k, v in sorted(out.items())}
+
+
+def build_collection(source: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    items = [i for i in (build_item(source, e) for e in source["items"]) if i]
+    times = sorted(i["properties"]["datetime"] for i in items) or [source["datetime"]]
+    boxes = [i["bbox"] for i in items if "bbox" in i]
+    bbox = (
+        [min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes)]
+        if boxes
+        else [-180.0, -90.0, 180.0, 90.0]
+    )
+    collection = {
+        "type": "Collection",
+        "stac_version": STAC_VERSION,
+        "stac_extensions": [FILE_EXT, HDF4_EXT],
+        "id": source["id"],
+        "title": source["title"],
+        "description": source["description"],
+        "license": source["license"],
+        "providers": source.get("providers", []),
+        "keywords": ["HDF4", "test data"],
+        "extent": {
+            "spatial": {"bbox": [bbox]},
+            "temporal": {"interval": [[times[0], times[-1]]]},
+        },
+        "summaries": summaries(items),
+        "links": [
+            {"rel": "root", "href": "../catalog.json", "type": "application/json"},
+            {"rel": "parent", "href": "../catalog.json", "type": "application/json"},
+            *source.get("links", []),
+            *(
+                {"rel": "item", "href": f"./{i['id']}/{i['id']}.json", "type": "application/geo+json"}
+                for i in items
+            ),
+        ],
+    }
+    write_json(CATALOG / source["id"] / "collection.json", collection)
+    return collection, items
+
+
+def main() -> int:
+    collections, flat = [], []
+    for path in sorted(SOURCES.glob("*.json")):
+        source = json.loads(path.read_text())
+        collection, items = build_collection(source)
+        if not items:
+            continue
+        collections.append(collection)
+        for item in items:
+            base = f"{source['id']}/{item['id']}"
+            flat.append(
+                {
+                    "collection": source["id"],
+                    "id": item["id"],
+                    "item": f"{base}/{item['id']}.json",
+                    "data": f"{base}/{item['assets']['data']['href'][2:]}",
+                    "expected": f"{base}/{item['assets']['expected']['href'][2:]}",
+                    "size": item["assets"]["data"]["file:size"],
+                    "sha256": item["assets"]["data"]["file:checksum"][4:],
+                    **{k: v for k, v in item["properties"].items() if k.startswith("hdf4:")},
+                }
+            )
+        print(f"{source['id']}: {len(items)} items")
+    catalog = {
+        "type": "Catalog",
+        "stac_version": STAC_VERSION,
+        "id": "example-hdf4",
+        "title": "Example HDF4 files",
+        "description": (
+            "Small HDF4 files chosen to cover the format's storage layouts, number types "
+            "and data models, each with a checksum, structural tags and an answer key "
+            "generated by the HDF4 C library. Intended as a test corpus for HDF4 readers."
+        ),
+        "links": [
+            {"rel": "root", "href": "./catalog.json", "type": "application/json"},
+            {
+                "rel": "vcs",
+                "href": "https://github.com/maxj-labs/hdf4-examples",
+                "title": "Source repository",
+            },
+            {
+                "rel": "items",
+                "href": "./items.json",
+                "type": "application/json",
+                "title": "Flat list of every item, for test suites",
+            },
+            *(
+                {"rel": "child", "href": f"./{c['id']}/collection.json", "type": "application/json", "title": c["title"]}
+                for c in collections
+            ),
+        ],
+    }
+    write_json(CATALOG / "catalog.json", catalog)
+    write_json(CATALOG / "items.json", flat)
+    print(f"total: {len(flat)} items, {sum(i['size'] for i in flat)} bytes of HDF4 data")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

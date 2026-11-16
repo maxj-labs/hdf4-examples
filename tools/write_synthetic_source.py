@@ -1,0 +1,36 @@
+"""Write sources/synthetic.json from the cases registered in gen_synthetic.py."""
+
+import json
+from pathlib import Path
+
+from gen_synthetic import CASES
+
+ROOT = Path(__file__).resolve().parent.parent
+source = {
+    "id": "synthetic",
+    "title": "Synthetic HDF4 files, one storage feature each",
+    "description": (
+        "Files written by the HDF4 C library through tools/gen_synthetic.py. Each isolates "
+        "one storage layout, compression coder, number type or metadata shape."
+    ),
+    "license": "CC0-1.0",
+    "datetime": "2026-11-16T00:00:00Z",
+    "providers": [
+        {"name": "maxj-labs/hdf4-examples", "roles": ["producer"], "url": "https://github.com/maxj-labs/hdf4-examples"}
+    ],
+    "items": [
+        {
+            "id": name,
+            "description": description,
+            "via": [
+                {
+                    "href": "https://github.com/maxj-labs/hdf4-examples/blob/main/tools/gen_synthetic.py",
+                    "title": f"Generator case {name!r}",
+                }
+            ],
+        }
+        for name, (_, description) in CASES.items()
+    ],
+}
+(ROOT / "sources" / "synthetic.json").write_text(json.dumps(source, indent=1) + "\n")
+print(f"wrote sources/synthetic.json with {len(source['items'])} items")
