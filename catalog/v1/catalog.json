@@ -12,17 +12,17 @@
   },
   {
    "rel": "vcs",
-   "href": "https://github.com/maxj-labs/hdf4-examples",
+   "href": "https://github.com/virtual-zarr/hdf4-examples",
    "title": "Source repository"
   },
   {
    "rel": "license",
-   "href": "https://github.com/maxj-labs/hdf4-examples/blob/main/LICENSE-GENERATED-DATA",
+   "href": "https://github.com/virtual-zarr/hdf4-examples/blob/main/LICENSE-GENERATED-DATA",
    "title": "CC0 1.0 Universal, for the synthetic files, answer keys and catalogue metadata"
   },
   {
    "rel": "about",
-   "href": "https://github.com/maxj-labs/hdf4-examples/blob/main/THIRD-PARTY.md",
+   "href": "https://github.com/virtual-zarr/hdf4-examples/blob/main/THIRD-PARTY.md",
    "title": "Terms of the GDAL, OPeNDAP and NASA files, which are unchanged"
   },
   {

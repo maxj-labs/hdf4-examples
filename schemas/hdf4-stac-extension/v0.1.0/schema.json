@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json",
+  "$id": "https://raw.githubusercontent.com/virtual-zarr/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json",
   "title": "HDF4 structure tags",
   "description": "STAC item properties describing how an HDF4 file is stored. Every value is computed from the file by tools/build_catalog.py.",
   "type": "object",

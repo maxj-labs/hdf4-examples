@@ -3,7 +3,7 @@
  "stac_version": "1.1.0",
  "stac_extensions": [
   "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-  "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json"
+  "https://raw.githubusercontent.com/virtual-zarr/hdf4-examples/main/schemas/hdf4-stac-extension/v0.1.0/schema.json"
  ],
  "id": "vg-hl-test",
  "collection": "opendap",

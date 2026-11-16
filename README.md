@@ -122,7 +122,7 @@ See [Automated Access](https://docs.source.coop/automated-access).
 2. In the organisation's settings, create a service account and grant it read and write
    access to that product.
 3. On the service account, add a GitHub workflow sign-in for the repository
-   `maxj-labs/hdf4-examples`, allowing runs from the **environment** `source-coop`.
+   `virtual-zarr/hdf4-examples`, allowing runs from the **environment** `source-coop`.
 4. In this repository, create an environment named `source-coop` (optionally with
    required reviewers, so an upload needs approval).
 5. Add a repository variable `SOURCE_COOP_ROLE` with the value

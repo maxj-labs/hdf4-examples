@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/maxj-labs/hdf4-examples/main/schemas/expected/v1.json",
+  "$id": "https://raw.githubusercontent.com/virtual-zarr/hdf4-examples/main/schemas/expected/v1.json",
   "title": "HDF4 answer key (hdf4-expected/1)",
   "description": "What the HDF4 C library reports for one file. Written by tools/describe.py.",
   "type": "object",
