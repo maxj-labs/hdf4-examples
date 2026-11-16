@@ -347,11 +347,12 @@ A version folder is frozen once published. Corrections and additions go in a new
 
 ## Getting the files
 
-Everything is readable without credentials, over HTTPS or S3:
+Everything is readable without credentials:
 
 - `{base}/catalog.json`
 - `{base}/items.json`
-- `s3://us-west-2.opendata.source.coop/pangeo/example-hdf4/{VERSION}/` (region `us-west-2`, unsigned requests)
+- with an S3 client: bucket `pangeo`, prefix `example-hdf4/{VERSION}/`, endpoint
+  `https://data.source.coop`, unsigned requests
 
 `items.json` is the simplest entry point. Each row gives an item's collection and id,
 paths (relative to `{VERSION}/`) to the data file and its answer key, the file's size and

@@ -1,7 +1,11 @@
 """Publish the catalogue and the HDF4 files to Source Cooperative.
 
     uv run --group publish tools/publish.py            # dry run: what would change
-    uv run --group publish tools/publish.py --confirm  # upload; needs AWS credentials
+    uv run --group publish tools/publish.py --confirm  # upload; needs credentials
+
+Credentials are Source Cooperative's, in the usual AWS environment variables. In
+GitHub Actions the ``publish`` workflow obtains them with no stored secret; on a
+workstation, ``source-coop login`` and an AWS profile provide them.
 
 Uploads ``catalog/v1/`` (metadata, from git) and the data files listed in
 ``catalog/v1/items.json`` (from ``data/``) to the same prefix, so every item's
@@ -23,10 +27,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 VERSION = "v1"
-BUCKET = "us-west-2.opendata.source.coop"
-REGION = "us-west-2"
-PRODUCT = "pangeo/example-hdf4"
+# Source Cooperative's data proxy. The bucket is the owning account and the first
+# path segment is the product. Uploads must go through the proxy; it accepts any
+# region, but S3 clients will not sign requests without one.
+ENDPOINT = "https://data.source.coop"
+BUCKET = "pangeo"
+PRODUCT = "example-hdf4"
 PREFIX = f"{PRODUCT}/{VERSION}"
+REGION = "us-west-2"
 # Shown on the product page. It sits above the version folders and describes the
 # latest one, so unlike everything under a version it may be replaced.
 README_KEY = "README.md"
@@ -62,11 +70,26 @@ def main() -> int:
     from obstore.store import S3Store
 
     files = local_files()
-    config = {"AWS_REGION": REGION}
+    config = {
+        "AWS_REGION": REGION,
+        "AWS_ENDPOINT_URL": ENDPOINT,
+        "AWS_VIRTUAL_HOSTED_STYLE_REQUEST": "false",
+    }
     if not args.confirm:
         config["AWS_SKIP_SIGNATURE"] = "true"  # a dry run only lists, anonymously
     store = S3Store(bucket=BUCKET, prefix=PREFIX, config=config)
-    remote = {meta["path"]: meta["size"] for batch in obstore.list(store) for meta in batch}
+    try:
+        remote = {meta["path"]: meta["size"] for batch in obstore.list(store) for meta in batch}
+    except Exception as exc:
+        if "404" not in str(exc):
+            raise
+        if args.confirm:
+            raise SystemExit(
+                f"The product {BUCKET}/{PRODUCT} does not exist on Source Cooperative. "
+                "Create it on source.coop first; this script does not create products."
+            ) from None
+        print(f"Note: the product {BUCKET}/{PRODUCT} does not exist on Source Cooperative yet.")
+        remote = {}
 
     new, same, changed = [], [], []
     for key, path in files.items():
@@ -77,7 +100,7 @@ def main() -> int:
         else:
             changed.append(key)
     total = sum(files[k].stat().st_size for k in new + changed)
-    print(f"s3://{BUCKET}/{PREFIX}/")
+    print(f"{ENDPOINT}/{BUCKET}/{PREFIX}/")
     print(f"  new: {len(new)}   unchanged: {len(same)}   differing: {len(changed)}   to upload: {total} bytes")
     for key in changed:
         print(f"  differs from the published copy: {key}")
@@ -85,7 +108,7 @@ def main() -> int:
         print("Refusing to replace published files. Publish a new version, or pass --allow-overwrite.", file=sys.stderr)
         return 1
     if not args.confirm:
-        print(f"  plus {README_KEY} at s3://{BUCKET}/{PRODUCT}/ (always replaced)")
+        print(f"  plus {README_KEY} at {ENDPOINT}/{BUCKET}/{PRODUCT}/ (always replaced)")
         print("Dry run. Nothing was uploaded; pass --confirm to upload.")
         return 0
     readme = (ROOT / "catalog" / README_KEY).read_bytes()

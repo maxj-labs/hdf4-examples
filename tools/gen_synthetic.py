@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import os
+import shutil
 import subprocess
 import sys
 from collections.abc import Callable, Iterator
@@ -37,8 +38,8 @@ CASES: dict[str, tuple[Callable[[str], None], str]] = {}
 
 # Cases whose bytes differ from one machine to the next. The Skipping-Huffman
 # encoder writes some bytes it never initialises, so the decoded values are
-# always the same but the file is not. For these the published file is the
-# reference, and a regenerated copy is only expected to decode identically.
+# always the same but the file is not. The described copy of each is kept in
+# pinned/synthetic/ and copied from there, so every build publishes the same bytes.
 NOT_REPRODUCIBLE = frozenset({"skphuff-int16"})
 
 
@@ -347,6 +348,11 @@ def main() -> int:
     parser.add_argument("names", nargs="*", help="cases to generate (default: all)")
     parser.add_argument("--list", action="store_true")
     parser.add_argument("--out", type=Path, default=OUT)
+    parser.add_argument(
+        "--regenerate",
+        action="store_true",
+        help="write machine-dependent cases afresh instead of copying them from pinned/",
+    )
     args = parser.parse_args()
     if args.list:
         for name, (_, description) in CASES.items():
@@ -363,7 +369,9 @@ def main() -> int:
         failed = 0
         for name in names:
             failed += subprocess.run(
-                [sys.executable, __file__, name, "--out", str(args.out)], check=False
+                [sys.executable, __file__, name, "--out", str(args.out)]
+                + (["--regenerate"] if args.regenerate else []),
+                check=False,
             ).returncode
         return 1 if failed else 0
     failed = 0
@@ -371,10 +379,15 @@ def main() -> int:
     func, _ = CASES[name]
     directory = args.out.resolve() / name
     directory.mkdir(parents=True, exist_ok=True)
+    pinned = ROOT / "pinned" / "synthetic" / f"{name}.hdf"
     os.chdir(directory)
     try:
-        func(f"{name}.hdf")
-        print(f"ok    {name}")
+        if name in NOT_REPRODUCIBLE and pinned.exists() and not args.regenerate:
+            shutil.copyfile(pinned, f"{name}.hdf")
+            print(f"ok    {name} (copied from pinned/, since its bytes vary between machines)")
+        else:
+            func(f"{name}.hdf")
+            print(f"ok    {name}")
     except Exception as exc:
         failed = 1
         print(f"FAIL  {name}: {type(exc).__name__}: {exc}", file=sys.stderr)

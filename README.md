@@ -36,12 +36,13 @@ sources/                    what to fetch or generate, with pinned checksums
 schemas/                    JSON Schema for the answer key and the hdf4 STAC extension
 tools/                      generate, fetch, describe, build, publish
 tests/                      catalogue checks
+pinned/                     the one generated file whose bytes vary between machines
 data/                       the HDF4 files themselves (not in git)
 ```
 
 The HDF4 files are not stored in this repository. They are regenerated or downloaded
 into `data/`, and published beside the metadata on Source Cooperative at
-`s3://us-west-2.opendata.source.coop/pangeo/example-hdf4/v1/`.
+`https://data.source.coop/pangeo/example-hdf4/v1/`.
 **Nothing has been published there yet.**
 
 ## Using the catalogue from a test suite
@@ -100,13 +101,45 @@ small granule.
 
 ## Publishing
 
+The product on Source Cooperative is built entirely from this repository. The `publish`
+workflow writes the synthetic files, downloads the pinned GDAL, OPeNDAP and NASA files,
+checks every one against the catalogue, and uploads data and metadata together.
+
+Run it from the Actions tab. Left as a dry run it reports what would change and uploads
+nothing; tick "upload" to publish.
+
+A published version is frozen: the publish script never deletes and refuses to replace a
+file whose content differs. Corrections go in a new version prefix. The product-page
+`README.md` is the one exception and is replaced on every publish.
+
+### Publishing from GitHub Actions: one-time setup
+
+Source Cooperative lets a GitHub Actions workflow sign in as a service account using a
+token GitHub issues for each run, so no Source Cooperative secret is stored here.
+See [Automated Access](https://docs.source.coop/automated-access).
+
+1. On source.coop, create the product `example-hdf4` under the `pangeo` organisation.
+2. In the organisation's settings, create a service account and grant it read and write
+   access to that product.
+3. On the service account, add a GitHub workflow sign-in for the repository
+   `maxj-labs/hdf4-examples`, allowing runs from the **environment** `source-coop`.
+4. In this repository, create an environment named `source-coop` (optionally with
+   required reviewers, so an upload needs approval).
+5. Add a repository variable `SOURCE_COOP_ROLE` with the value
+   `arn:aws:iam::<service-account-id>:role/FullAccess`.
+6. Add a repository secret `EARTHDATA_TOKEN` with an Earthdata Login token. These expire
+   after 60 days.
+
+### Publishing from a workstation
+
 ```bash
 uv run --group publish tools/publish.py            # dry run
-uv run --group publish tools/publish.py --confirm  # upload; needs AWS credentials
+uv run --group publish tools/publish.py --confirm  # upload
 ```
 
-A published version is frozen: the script never deletes and refuses to replace a file
-whose content differs. Corrections go in a new version prefix.
+The upload needs Source Cooperative credentials in the standard AWS environment
+variables or profile; see
+[Upload with the Source CLI](https://docs.source.coop/upload-with-the-cli).
 
 ## How the answer keys were checked
 
