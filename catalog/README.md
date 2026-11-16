@@ -1,0 +1,73 @@
+# Example HDF4 files
+
+Small HDF4 files for testing HDF4 readers: 86 files, 64 MB. Each file has a
+SHA-256 checksum, its provenance, tags describing how it is stored, and an answer key
+(`<file>.expected.json`) recording what the HDF4 C library reports for it: every scientific
+dataset's type, shape, dimensions, attributes, a hash of its decoded values and the byte
+ranges holding its stored bytes, plus Vdata tables, Vgroups and HDF-EOS2 structure.
+
+The tools that build this catalogue, the schemas and the issue tracker are at
+<https://github.com/maxj-labs/hdf4-examples>.
+
+## Collections
+
+| Collection | Files | Size | Contents | Licence |
+| --- | --- | --- | --- | --- |
+| `gdal` | 27 | 14.9 MB | HDF4 files from GDAL's test suite and sample-data server | other |
+| `nasa-ghrc` | 1 | 0.4 MB | NASA HDF4 granules from GHRC DAAC | other |
+| `nasa-larc` | 5 | 14.1 MB | NASA HDF4 granules from ASDC | other |
+| `nasa-lpcloud` | 14 | 21.3 MB | NASA HDF4 granules from LP DAAC | other |
+| `nasa-nsidc` | 4 | 12.7 MB | NASA HDF4 granules from NSIDC DAAC | other |
+| `opendap` | 13 | 0.1 MB | HDF4 files from OPeNDAP's DMR++ tests | LGPL-3.0-only |
+| `synthetic` | 22 | 0.2 MB | Synthetic HDF4 files, one storage feature each | CC0-1.0 |
+
+Licence `other` means each item carries its source's own terms; see the collection's
+`license` link and each item's `via` links. NASA granules link to their record in NASA's
+Common Metadata Repository, which holds the dataset's citation and use constraints.
+
+## Layout
+
+```
+v1/
+  catalog.json                             STAC 1.1 root
+  items.json                               flat list of every item
+  <collection>/collection.json
+  <collection>/<id>/<id>.json              STAC item
+  <collection>/<id>/<file>.hdf             the HDF4 file
+  <collection>/<id>/<file>.expected.json   answer key
+  <collection>/<id>/<file>.hdf.dmrpp       DMR++ description, where one exists
+```
+
+A version folder is frozen once published. Corrections and additions go in a new version.
+
+## Getting the files
+
+Everything is readable without credentials, over HTTPS or S3:
+
+- `https://data.source.coop/pangeo/example-hdf4/v1/catalog.json`
+- `https://data.source.coop/pangeo/example-hdf4/v1/items.json`
+- `s3://us-west-2.opendata.source.coop/pangeo/example-hdf4/v1/` (region `us-west-2`, unsigned requests)
+
+`items.json` is the simplest entry point. Each row gives an item's collection and id,
+paths (relative to `v1/`) to the data file and its answer key, the file's size and
+SHA-256, and its tags. Select by tag, download, verify the checksum, read the file with
+your HDF4 reader, and compare against the answer key.
+
+## What the tags cover
+
+- Storage layouts: `chunk_multi_range`, `chunked`, `compressed`, `contiguous`, `linked_scattered`, `linked_single`, `unwritten`
+- Compression coders: `deflate`, `none`, `rle`, `skphuff`
+- Data models: `annotation`, `eos_grid`, `eos_swath`, `raster_image`, `sd`, `vdata`
+
+The tags are defined in the
+[hdf4 STAC extension schema](https://github.com/maxj-labs/hdf4-examples/blob/main/schemas/hdf4-stac-extension/v0.1.0/schema.json)
+and the answer key in the
+[answer-key schema](https://github.com/maxj-labs/hdf4-examples/blob/main/schemas/expected/v1.json).
+
+## How the answer keys were made
+
+By the HDF4 C library, through `pyhdf` and the library's own data-map function
+(`SDgetdatainfo`) for byte ranges. Where OPeNDAP publishes a DMR++ description of a file,
+its byte ranges were compared with ours and agree. Two parts are derived by this
+project's tools instead of the library, and say so in a `derived_by` field: the HDF-EOS2
+structure (parsed from the StructMetadata text) and the descriptor counts.

@@ -268,6 +268,88 @@ def build_collection(source: dict[str, Any]) -> tuple[dict[str, Any], list[dict[
     return collection, items
 
 
+def readme(collections: list[dict[str, Any]], flat: list[dict[str, Any]]) -> str:
+    """The README shown on the Source Cooperative product page, built from the catalogue."""
+    base = f"https://data.source.coop/pangeo/example-hdf4/{VERSION}"
+    rows = []
+    for c in collections:
+        mine = [r for r in flat if r["collection"] == c["id"]]
+        size = sum(r["size"] for r in mine) / 1e6
+        rows.append(f"| `{c['id']}` | {len(mine)} | {size:.1f} MB | {c['title']} | {c['license']} |")
+    total = sum(r["size"] for r in flat) / 1e6
+    layouts = sorted({x for r in flat for x in r["hdf4:layouts"]})
+    coders = sorted({x for r in flat for x in r["hdf4:coders"]})
+    models = sorted({x for r in flat for x in r["hdf4:data_models"]})
+    return f"""# Example HDF4 files
+
+Small HDF4 files for testing HDF4 readers: {len(flat)} files, {total:.0f} MB. Each file has a
+SHA-256 checksum, its provenance, tags describing how it is stored, and an answer key
+(`<file>.expected.json`) recording what the HDF4 C library reports for it: every scientific
+dataset's type, shape, dimensions, attributes, a hash of its decoded values and the byte
+ranges holding its stored bytes, plus Vdata tables, Vgroups and HDF-EOS2 structure.
+
+The tools that build this catalogue, the schemas and the issue tracker are at
+<https://github.com/maxj-labs/hdf4-examples>.
+
+## Collections
+
+| Collection | Files | Size | Contents | Licence |
+| --- | --- | --- | --- | --- |
+{chr(10).join(rows)}
+
+Licence `other` means each item carries its source's own terms; see the collection's
+`license` link and each item's `via` links. NASA granules link to their record in NASA's
+Common Metadata Repository, which holds the dataset's citation and use constraints.
+
+## Layout
+
+```
+{VERSION}/
+  catalog.json                             STAC 1.1 root
+  items.json                               flat list of every item
+  <collection>/collection.json
+  <collection>/<id>/<id>.json              STAC item
+  <collection>/<id>/<file>.hdf             the HDF4 file
+  <collection>/<id>/<file>.expected.json   answer key
+  <collection>/<id>/<file>.hdf.dmrpp       DMR++ description, where one exists
+```
+
+A version folder is frozen once published. Corrections and additions go in a new version.
+
+## Getting the files
+
+Everything is readable without credentials, over HTTPS or S3:
+
+- `{base}/catalog.json`
+- `{base}/items.json`
+- `s3://us-west-2.opendata.source.coop/pangeo/example-hdf4/{VERSION}/` (region `us-west-2`, unsigned requests)
+
+`items.json` is the simplest entry point. Each row gives an item's collection and id,
+paths (relative to `{VERSION}/`) to the data file and its answer key, the file's size and
+SHA-256, and its tags. Select by tag, download, verify the checksum, read the file with
+your HDF4 reader, and compare against the answer key.
+
+## What the tags cover
+
+- Storage layouts: {", ".join(f"`{x}`" for x in layouts)}
+- Compression coders: {", ".join(f"`{x}`" for x in coders)}
+- Data models: {", ".join(f"`{x}`" for x in models)}
+
+The tags are defined in the
+[hdf4 STAC extension schema](https://github.com/maxj-labs/hdf4-examples/blob/main/schemas/hdf4-stac-extension/v0.1.0/schema.json)
+and the answer key in the
+[answer-key schema](https://github.com/maxj-labs/hdf4-examples/blob/main/schemas/expected/v1.json).
+
+## How the answer keys were made
+
+By the HDF4 C library, through `pyhdf` and the library's own data-map function
+(`SDgetdatainfo`) for byte ranges. Where OPeNDAP publishes a DMR++ description of a file,
+its byte ranges were compared with ours and agree. Two parts are derived by this
+project's tools instead of the library, and say so in a `derived_by` field: the HDF-EOS2
+structure (parsed from the StructMetadata text) and the descriptor counts.
+"""
+
+
 def main() -> int:
     collections, flat = [], []
     for path in sorted(SOURCES.glob("*.json")):
@@ -322,6 +404,7 @@ def main() -> int:
     }
     write_json(CATALOG / "catalog.json", catalog)
     write_json(CATALOG / "items.json", flat)
+    (ROOT / "catalog" / "README.md").write_text(readme(collections, flat))
     print(f"total: {len(flat)} items, {sum(i['size'] for i in flat)} bytes of HDF4 data")
     return 0
 

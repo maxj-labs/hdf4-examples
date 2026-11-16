@@ -5,7 +5,9 @@
 
 Uploads ``catalog/v1/`` (metadata, from git) and the data files listed in
 ``catalog/v1/items.json`` (from ``data/``) to the same prefix, so every item's
-relative ``./file.hdf`` link resolves.
+relative ``./file.hdf`` link resolves. Also uploads ``catalog/README.md``, which
+``build_catalog.py`` generates, to the product root, where Source Cooperative
+shows it on the product page.
 
 A published version is frozen. This script never deletes, and it refuses to
 replace an object whose content differs unless ``--allow-overwrite`` is given.
@@ -23,7 +25,11 @@ ROOT = Path(__file__).resolve().parent.parent
 VERSION = "v1"
 BUCKET = "us-west-2.opendata.source.coop"
 REGION = "us-west-2"
-PREFIX = f"pangeo/example-hdf4/{VERSION}"
+PRODUCT = "pangeo/example-hdf4"
+PREFIX = f"{PRODUCT}/{VERSION}"
+# Shown on the product page. It sits above the version folders and describes the
+# latest one, so unlike everything under a version it may be replaced.
+README_KEY = "README.md"
 CONTENT_TYPES = {".json": "application/json", ".hdf": "application/x-hdf", ".dmrpp": "application/xml"}
 
 
@@ -79,8 +85,13 @@ def main() -> int:
         print("Refusing to replace published files. Publish a new version, or pass --allow-overwrite.", file=sys.stderr)
         return 1
     if not args.confirm:
+        print(f"  plus {README_KEY} at s3://{BUCKET}/{PRODUCT}/ (always replaced)")
         print("Dry run. Nothing was uploaded; pass --confirm to upload.")
         return 0
+    readme = (ROOT / "catalog" / README_KEY).read_bytes()
+    product = S3Store(bucket=BUCKET, prefix=PRODUCT, config=config)
+    obstore.put(product, README_KEY, readme, attributes={"Content-Type": "text/markdown"})
+    print(f"  uploaded {README_KEY} to the product root")
     for key in new + changed:
         path = files[key]
         content_type = CONTENT_TYPES.get(path.suffix, "application/octet-stream")
