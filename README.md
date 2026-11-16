@@ -117,7 +117,17 @@ whose content differs. Corrections go in a new version prefix.
 
 ## Licences
 
-Not settled. The synthetic files are marked CC0-1.0 as a proposal. GDAL's and OPeNDAP's
-files come from repositories under those projects' licences. NASA granules carry each
-collection's own use constraints, recorded per item in `sources/`. This repository has no
-licence file yet.
+Each collection records where its terms come from, and links to them:
+
+- **GDAL.** GDAL states, in `autotest/README.md` and in the `COPYING` file on its data
+  server, that its sample and test data files "are available as public and freely
+  redistributable geodata". The source tree is under an MIT-style licence.
+- **NASA.** Each item carries its collection's `UseConstraints` and `AccessConstraints`
+  exactly as recorded in NASA's Common Metadata Repository (`cmr:terms`), with the DOI.
+  Of the 24 collections, 16 give a link to NASA's data-use policy, 4 (NSIDC) give a
+  licence text, and 4 record nothing.
+- **OPeNDAP.** The files come from the BES repository, whose `COPYING` file is the GNU
+  LGPL version 3. The repository says nothing specific about its test data.
+- **Synthetic.** Marked CC0-1.0 as a proposal, not yet confirmed.
+
+This repository has no licence file of its own yet.
